@@ -49,3 +49,15 @@
     text-decoration: line-through;
   }
   
+  .account.covered-green {
+    background-color: green;  /* 1 person covering */
+  }
+  
+  .account.covered-blue {
+    background-color: blue;   /* 2 people covering */
+  }
+  
+  .account.covered-purple {
+    background-color: purple; /* 3 people covering */
+  }
+  

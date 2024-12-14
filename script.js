@@ -121,49 +121,68 @@ document.addEventListener("DOMContentLoaded", function () {
   
     // Update the account coverage based on selected employees
     function updateAccountCoverage(data) {
-      const allDays = document.querySelectorAll('.day');
-      allDays.forEach(dayElement => {
-        const date = dayElement.dataset.date;
-        const selectedEmployees = [];
-        let everydayCovered = false;
-  
-        // Loop through each employee and check if they're selected for the day
-        data.employees.forEach(employee => {
-          const checkbox = dayElement.querySelector(`input[data-employee="${employee.name}"][data-date="${date}"]`);
-          if (checkbox && checkbox.checked) {
-            selectedEmployees.push(employee.name);
-  
-            // Check if the employee has the everyday flag
-            if (employee.everyday && !employee.daysOff.includes(date)) {
-              everydayCovered = true;
+        const allDays = document.querySelectorAll('.day');
+        allDays.forEach(dayElement => {
+          const date = dayElement.dataset.date;
+          const selectedEmployees = [];
+          const accountCoverage = {};  // Track how many people are covering each account
+          let everydayCovered = false;  // Track if at least one 'everyday' employee is working
+      
+          // Loop through each employee and check if they're selected for the day
+          data.employees.forEach(employee => {
+            const checkbox = dayElement.querySelector(`input[data-employee="${employee.name}"][data-date="${date}"]`);
+            if (checkbox && checkbox.checked) {
+              selectedEmployees.push(employee.name);
+      
+              // Check if the employee has the 'everyday' flag and is covering this day
+              if (employee.everyday) {
+                everydayCovered = true;  // Mark as covered if any everyday employee is checked
+              }
+      
+              // Loop through the accounts of the employee and count them for the day
+              employee.accounts.forEach(account => {
+                if (!accountCoverage[account]) {
+                  accountCoverage[account] = 0;
+                }
+                accountCoverage[account]++;
+              });
             }
+          });
+      
+          // If no 'everyday' employee is covering the day, mark it visually
+          const everydayStatus = dayElement.querySelector('.everyday-status');
+          if (!everydayCovered) {
+            everydayStatus.textContent = "Everyday coverage missing!";
+            everydayStatus.style.color = 'red'; // Red to indicate missing everyday coverage
+          } else {
+            everydayStatus.textContent = "Everyday coverage met";
+            everydayStatus.style.color = 'green'; // Green to indicate everyday coverage is met
           }
-        });
-  
-        // Update the everyday requirement
-        const everydayStatus = dayElement.querySelector('.everyday-status');
-        if (everydayCovered) {
-          everydayStatus.textContent = 'Everyday Requirement: Met';
-          everydayStatus.style.color = 'green';
-        } else {
-          everydayStatus.textContent = 'Everyday Requirement: Unmet';
-          everydayStatus.style.color = 'red';
-        }
-  
-        // Update account coverage (red -> green)
-        const accountsList = dayElement.querySelector('.accounts-list');
-        const accounts = accountsList.querySelectorAll('.account');
-  
-        accounts.forEach(accountDiv => {
-          accountDiv.classList.remove('covered');  // Reset coverage
-          selectedEmployees.forEach(employeeName => {
-            const employee = data.employees.find(emp => emp.name === employeeName);
-            if (employee && employee.accounts.includes(accountDiv.dataset.account)) {
-              accountDiv.classList.add('covered');
+      
+          // Update account coverage (change color based on the number of people covering)
+          const accountsList = dayElement.querySelector('.accounts-list');
+          const accounts = accountsList.querySelectorAll('.account');
+      
+          accounts.forEach(accountDiv => {
+            const account = accountDiv.dataset.account;
+            const coverageCount = accountCoverage[account] || 0;
+      
+            // Apply colors based on the coverage count
+            if (coverageCount === 1) {
+              accountDiv.classList.add('covered-green');
+              accountDiv.classList.remove('covered-blue', 'covered-purple');
+            } else if (coverageCount === 2) {
+              accountDiv.classList.add('covered-blue');
+              accountDiv.classList.remove('covered-green', 'covered-purple');
+            } else if (coverageCount >= 3) {
+              accountDiv.classList.add('covered-purple');
+              accountDiv.classList.remove('covered-green', 'covered-blue');
+            } else {
+              accountDiv.classList.remove('covered-green', 'covered-blue', 'covered-purple');
             }
           });
         });
-      });
-    }
+      }
+           
   });
   
