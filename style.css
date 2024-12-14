@@ -1,0 +1,51 @@
+.schedule-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* To make sure days are spaced evenly */
+    gap: 10px; /* Adjust gap between days if needed */
+  }
+  
+  .day {
+    width: calc(20% - 10px); /* Adjust width to fit 5 days per row (100% / 5 days = 20%) */
+    margin-bottom: 20px; /* Add some space between rows */
+    padding: 20px;
+    border: 1px solid #ccc;
+    min-height: 300px; /* Set a minimum height for each day's div */
+  }
+  
+  .accounts-list {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .account {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    background-color: red;
+    color: white;
+  }
+  
+  .account.covered {
+    background-color: green;
+  }
+  
+  .everyday-status {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .checklist {
+    margin-top: 20px;
+  }
+  
+  label {
+    margin-right: 10px;
+  }
+  
+  input[type="checkbox"]:disabled {
+    color: grey;
+    text-decoration: line-through;
+  }
+  
