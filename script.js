@@ -1,19 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
     const scheduleContainer = document.getElementById('schedule-container');
+    const fileInput = document.getElementById('file-input');
+    const loadButton = document.getElementById('load-button');
   
-    // Fetch the employee data from the external JSON file
-    fetch('employees.json')
-      .then(response => response.json())
-      .then(data => {
-        if (data && Array.isArray(data.employees)) {
-          generateSchedule(data);
-        } else {
-          console.error("Invalid employee data format");
-        }
-      })
-      .catch(error => {
-        console.error('Error loading employee data:', error);
-      });
+    loadButton.addEventListener('click', function() {
+      const file = fileInput.files[0]; // Get the file from the input
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result); // Parse the JSON data
+            if (data && Array.isArray(data.employees)) {
+              scheduleContainer.innerHTML = ''; // Clear previous content
+              generateSchedule(data); // Generate the schedule based on the data
+            } else {
+              alert("Invalid JSON structure.");
+            }
+          } catch (error) {
+            console.error('Error reading the file:', error);
+            alert("Failed to parse JSON.");
+          }
+        };
+        reader.readAsText(file); // Read the file as text
+      } else {
+        alert("Please select a JSON file.");
+      }
+    });
   
     function generateSchedule(data) {
       const uniqueDaysOff = getUniqueDaysOff(data);
